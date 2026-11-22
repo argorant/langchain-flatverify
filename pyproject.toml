@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "langchain-flatverify"
+version = "1.0.0"
+description = "LangChain tools for Flatverify email verification: check one address or a whole list from an agent."
+license = { text = "MIT" }
+readme = "README.md"
+authors = [{ name = "Argorant", email = "dev@argorant.com" }]
+keywords = ["langchain", "flatverify", "email verification", "email validation", "agents", "tools"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Communications :: Email",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "langchain-core>=1.0.0,<2.0.0",
+    "httpx>=0.27.0,<1.0.0",
+]
+
+[project.urls]
+Homepage = "https://flatverify.com"
+Documentation = "https://flatverify.com/docs"
+Repository = "https://github.com/argorant/langchain-flatverify"
+Issues = "https://github.com/argorant/langchain-flatverify/issues"
+
+[dependency-groups]
+test = [
+    "pytest>=8.3.0,<10.0.0",
+    "pytest-asyncio>=0.24.0,<2.0.0",
+    "pytest-socket>=0.7.0,<1.0.0",
+    "respx>=0.22.0,<1.0.0",
+    "langchain-tests>=1.0.0,<2.0.0",
+]
+lint = ["ruff>=0.13.1,<1.0.0"]
+typing = ["mypy>=1.13.0,<3.0.0"]
+dev = ["build>=1.2.0", "twine>=6.0.0"]
+
+[tool.hatch.build.targets.sdist]
+include = ["langchain_flatverify", "tests", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["langchain_flatverify"]
+
+[tool.mypy]
+disallow_untyped_defs = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["respx", "pytest_socket"]
+ignore_missing_imports = true
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = ["A", "ASYNC", "C4", "D", "E", "EM", "F", "FA", "I", "PIE", "PERF", "Q", "RET", "RUF", "S", "SIM", "T20", "TID", "UP", "W"]
+ignore = ["COM812", "ISC001", "RUF012", "SLF001"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/**/*.py" = ["S101", "S105", "S106", "D"]
+"scripts/*.py" = ["T201", "INP001"]
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --strict-config --durations=5"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "live: calls the real Flatverify API, skipped unless FLATVERIFY_API_KEY is set",
+]
